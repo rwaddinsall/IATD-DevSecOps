@@ -3,6 +3,7 @@ name: Deploy
 on: workflow_dispatch
 
 jobs:
+  #
   deploy:
     runs-on: ubuntu-latest
     steps:
@@ -20,6 +21,7 @@ jobs:
           location: australiaeast
           targetPort: 5001
 
+          # In this job we log in to Azure and then generate an access token. We then check the URL for the application and send a POST request to it to verify that the application is working correctly.
   submit_results:
     needs: [deploy]
     if: true
