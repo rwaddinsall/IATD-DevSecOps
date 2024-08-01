@@ -1,0 +1,22 @@
+name: Deploy
+
+on: workflow_dispatch
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: azure/login@v1
+        with:
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
+
+      - name: Deploy Container App
+        uses: azure/container-apps-deploy-action@v1
+        with:
+          imageToDeploy: ${{ secrets.DOCKERHUB_USERNAME }}/devops-labs:latest
+          containerAppName: devops-app
+          containerAppEnvironment: devops-app-env
+          resourceGroup: devsecops-lab
+          location: australiaeast
+          targetPort: 5001
+# This pipeline is configured to be deployed when manually triggered by the user (workflow_dispatch option). Then it logs in to azure and deploys our docker container. Try to run this pipeline and see if it works. You can do this in Github by clicking on Actions and then Deploy. Click on Run workflow and then Run workflow again.
