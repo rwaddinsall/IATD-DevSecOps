@@ -3,8 +3,8 @@ name: Deploy
 on: workflow_dispatch
 
 jobs:
-  #
-  deploy:
+  
+  deploy: #  logs in to Azure and deploys the Docker container.
     runs-on: ubuntu-latest
     steps:
       - uses: azure/login@v1
@@ -21,8 +21,7 @@ jobs:
           location: australiaeast
           targetPort: 5000
 
-  submit_results:
-    # In this job we log in to Azure and then generate an access token. We then check the URL for the application and send a POST request to it to verify that the application is working correctly.
+  submit_results: # generate an access token, and send a POST request to the application URL to verify that the application is working correctly.
     needs: [deploy]
     if: true
     runs-on: ubuntu-latest
@@ -49,4 +48,4 @@ jobs:
           WEEK1_APP=$(curl -X POST -H "Authorization: Bearer $AZURE_ACCESS_TOKEN" -d "https://$FQDN" https://devsecops-ver.azurewebsites.net/api/week1-app)
           echo "Week1 app upload: $WEEK1_APP"
 
-# This pipeline is configured to be deployed when manually triggered by the user (workflow_dispatch option). Then it logs in to azure and deploys our docker container. Try to run this pipeline and see if it works. You can do this in Github by clicking on Actions and then Deploy. Click on Run workflow and then Run workflow again.
+# This pipeline is configured to be deployed when manually triggered by the user (workflow_dispatch option). Then it logs in to azure and deploys our docker container.

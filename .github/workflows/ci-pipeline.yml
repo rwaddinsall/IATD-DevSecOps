@@ -3,7 +3,7 @@ name: Python test and build
 on: [push]
 
 jobs:
-  test:
+  test: # set up Python environment, install dependencies, run tests with pytest, and archive the test results.
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -26,7 +26,7 @@ jobs:
           name: test-results
           path: junit/test-results.xml
 
-  submit_results:
+  submit_results: # log in to Azure, generate an access token, and send a POST request to the application URL to verify that the application is working.
     needs: [build]
     if: true
     runs-on: ubuntu-latest
@@ -52,7 +52,7 @@ jobs:
           WEEK1_CONTAINER=$(curl -X POST -H "Authorization: Bearer $AZURE_ACCESS_TOKEN" -d "$DOCKERHUB_USERNAME/devops-labs" https://devsecops-ver.azurewebsites.net/api/week1-container)
           echo "Week1 container upload: $WEEK1_CONTAINER"
 
-  build:
+  build: #  build and push Docker image to Docker hub.
     needs: test
     runs-on: ubuntu-latest
     steps:
