@@ -19,10 +19,10 @@ jobs:
           containerAppEnvironment: devops-app-env
           resourceGroup: devsecops-lab
           location: australiaeast
-          targetPort: 5001
+          targetPort: 5000
 
-          # In this job we log in to Azure and then generate an access token. We then check the URL for the application and send a POST request to it to verify that the application is working correctly.
   submit_results:
+    # In this job we log in to Azure and then generate an access token. We then check the URL for the application and send a POST request to it to verify that the application is working correctly.
     needs: [deploy]
     if: true
     runs-on: ubuntu-latest
