@@ -112,7 +112,7 @@ jobs:
 
   # Build and push the Docker image
   build:
-    needs: test
+    needs: [test, sonarqube, dast]
     runs-on: ubuntu-latest
     steps:
       - name: Set up QEMU
