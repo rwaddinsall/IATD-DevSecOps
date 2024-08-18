@@ -29,7 +29,7 @@ jobs:
 
   # Job to run SonarQube scan for code quality and security analysis
   sonarqube:
-    if: false
+    if: true
     needs: test
     runs-on: ubuntu-latest
     steps:
@@ -56,7 +56,7 @@ jobs:
 
   # Job to perform Dynamic Application Security Testing (DAST)
   dast:
-    if: false
+    if: true
     needs: [test, sonarqube]
     runs-on: ubuntu-latest
     steps:
@@ -141,7 +141,7 @@ jobs:
 
   # Build and push the Docker image
   build:
-    if: false
+    if: true
     needs: [test, sonarqube, dast]
     runs-on: ubuntu-latest
     steps:
@@ -224,8 +224,8 @@ jobs:
           DOCKERHUB_USERNAME: ${{ secrets.DOCKERHUB_USERNAME }}
           AZURE_ACCESS_TOKEN: ${{ steps.token-gen.outputs.azureAccessToken }}
         run: |
-          # WEEK1_CONTAINER=$(curl -X POST -H "Authorization: Bearer $AZURE_ACCESS_TOKEN" -d "$DOCKERHUB_USERNAME/devops-labs" https://devsecops-ver.azurewebsites.net/api/week1-container)
-          # echo "Week1 container upload: $WEEK1_CONTAINER"
+          WEEK1_CONTAINER=$(curl -X POST -H "Authorization: Bearer $AZURE_ACCESS_TOKEN" -d "$DOCKERHUB_USERNAME/devops-labs" https://devsecops-ver.azurewebsites.net/api/week1-container)
+          echo "Week1 container upload: $WEEK1_CONTAINER"
 
           SONAR_RESPONSE=$(curl -X POST -H "Authorization: Bearer $AZURE_ACCESS_TOKEN"  --data-binary @$GITHUB_WORKSPACE/sonarqube-report.json https://devsecops-ver.azurewebsites.net/api/week3-sonar-report)
           echo "Sonar upload: $SONAR_RESPONSE"
