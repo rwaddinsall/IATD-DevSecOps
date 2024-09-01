@@ -6,19 +6,33 @@ jobs:
   deploy: #  logs in to Azure and deploys the Docker container.
     runs-on: ubuntu-latest
     steps:
-      - uses: azure/login@v1
-        with:
+    - name: Install Cosign
+      uses: sigstore/cosign-installer@v3.4.0
+
+    - name: Verify image signature
+      env:
+        IMAGE: ${{ secrets.DOCKERHUB_USERNAME }}/devops-labs:latest
+        GITHUB_ISSUER: https://token.actions.githubusercontent.com
+        CERT_IDENTITY_REGEXP: https://github.com/.*/devsecops-lab-app/.github/workflows/ci-pipeline.yml.*
+
+      run: |
+        cosign verify $IMAGE  --certificate-identity-regexp $CERT_IDENTITY_REGEXP  --certificate-oidc-issuer $GITHUB_ISSUER
+      
+    - name: Azure Login
+      uses: azure/login@v1
+      with:
           creds: ${{ secrets.AZURE_CREDENTIALS }}
 
-      - name: Deploy Container App
-        uses: azure/container-apps-deploy-action@v1
-        with:
+    - name: Deploy Container App
+      uses: azure/container-apps-deploy-action@v1
+      with:
           imageToDeploy: ${{ secrets.DOCKERHUB_USERNAME }}/devops-labs:latest
           containerAppName: devops-app
           containerAppEnvironment: devops-app-env
           resourceGroup: devsecops-lab
           location: australiaeast
           targetPort: 5000
+      
 
   submit_results: # generate an access token, and send a POST request to the application URL to verify that the application is working correctly.
     needs: [deploy]
