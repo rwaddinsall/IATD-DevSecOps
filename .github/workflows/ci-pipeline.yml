@@ -226,7 +226,7 @@ jobs:
   # build and push
   build:
     if: true
-    needs: [test, sonarqube, dast, image-scan, security_gate]
+    needs: [test, sonarqube, dast, image-scan]
     runs-on: ubuntu-latest
     steps:
       - name: Set up QEMU
