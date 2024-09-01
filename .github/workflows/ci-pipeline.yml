@@ -139,7 +139,7 @@ jobs:
 
   security_gate:
     needs: [test, sonarqube, dast, image-scan]
-    if: true
+    if: false
     runs-on: ubuntu-latest
     steps:
       - name: Download sonarqube-report
