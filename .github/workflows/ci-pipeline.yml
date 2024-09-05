@@ -229,6 +229,9 @@ jobs:
         with:
           creds: ${{ secrets.AZURE_CREDENTIALS }}
 
+      - name: Install jq
+        run: sudo apt-get install -y jq
+
       - name: Azure CLI script
         id: token-gen
         uses: azure/CLI@v1
