@@ -56,7 +56,7 @@ jobs:
 
   # Job to perform Dynamic Application Security Testing (DAST)
   dast:
-    needs: test
+    needs: [test, sonarqube]
     if: true
     runs-on: ubuntu-latest
     steps:
@@ -119,7 +119,7 @@ jobs:
           path: report_json.json
 
   image-scan: #  scan docker image
-    needs: test
+    needs: [test, dast]
     if: true
     runs-on: ubuntu-latest
     steps:
@@ -186,7 +186,7 @@ jobs:
 
   submit_reports:
     needs: [test, sonarqube, dast, image-scan]
-    if: false
+    if: true
     runs-on: ubuntu-latest
     steps:
       - uses: azure/login@v1
@@ -220,6 +220,7 @@ jobs:
 
           SONAR_RESPONSE=$(curl -X POST -H "Authorization: Bearer $AZURE_ACCESS_TOKEN"  --data-binary @$GITHUB_WORKSPACE/sonarqube-report.json https://devsecops-ver.azurewebsites.net/api/week3-sonar-report)
           echo "Sonar upload: $SONAR_RESPONSE"
+          
           ZAP_RESPONSE=$(curl -X POST -H "Authorization: Bearer $AZURE_ACCESS_TOKEN"  --data-binary @$GITHUB_WORKSPACE/report_json.json https://devsecops-ver.azurewebsites.net/api/week3-zap-report)
           echo "Zap upload: $ZAP_RESPONSE"
 
