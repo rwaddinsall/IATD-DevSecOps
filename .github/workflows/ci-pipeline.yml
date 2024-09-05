@@ -30,7 +30,7 @@ jobs:
   # Job to run SonarQube scan for code quality and security analysis
   sonarqube:
     if: true
-    needs: test
+    needs: [test]
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
@@ -56,7 +56,7 @@ jobs:
 
   # Job to perform Dynamic Application Security Testing (DAST)
   dast:
-    needs: [test, sonarqube]
+    needs: [test]
     if: true
     runs-on: ubuntu-latest
     steps:
@@ -119,7 +119,7 @@ jobs:
           path: report_json.json
 
   image-scan: #  scan docker image
-    needs: [test, dast]
+    needs: [test]
     if: true
     runs-on: ubuntu-latest
     steps:
@@ -184,8 +184,42 @@ jobs:
 
           echo "All security gates passed"
 
+  # build and push
+  build:
+    needs: [security_gate]
+    if: true
+    permissions:
+      id-token: write
+    runs-on: ubuntu-latest
+    steps:
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v3
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+      - name: Login to Docker Hub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+      - name: Build and push
+        uses: docker/build-push-action@v5
+        with:
+          push: true
+          sbom: true
+          provenance: true
+          tags: ${{ secrets.DOCKERHUB_USERNAME }}/devops-labs:latest
+
+      - name: Install Cosign
+        uses: sigstore/cosign-installer@v3.4.0
+
+      - name: Sign the images with GitHub OIDC Token
+        env:
+          IMAGE: ${{ secrets.DOCKERHUB_USERNAME }}/devops-labs:latest
+        run: |
+          cosign sign --yes ${IMAGE}
+
   submit_reports:
-    needs: [test, sonarqube, dast, image-scan]
+    needs: [build]
     if: true
     runs-on: ubuntu-latest
     steps:
@@ -220,7 +254,7 @@ jobs:
 
           SONAR_RESPONSE=$(curl -X POST -H "Authorization: Bearer $AZURE_ACCESS_TOKEN"  --data-binary @$GITHUB_WORKSPACE/sonarqube-report.json https://devsecops-ver.azurewebsites.net/api/week3-sonar-report)
           echo "Sonar upload: $SONAR_RESPONSE"
-          
+
           ZAP_RESPONSE=$(curl -X POST -H "Authorization: Bearer $AZURE_ACCESS_TOKEN"  --data-binary @$GITHUB_WORKSPACE/report_json.json https://devsecops-ver.azurewebsites.net/api/week3-zap-report)
           echo "Zap upload: $ZAP_RESPONSE"
 
@@ -229,37 +263,3 @@ jobs:
 
           WEEK5_RESPONSE=$(curl -X POST  -H "Authorization: Bearer $AZURE_ACCESS_TOKEN"  -d "$IMAGE" https://devsecops-ver.azurewebsites.net/api/week5-report)
           echo "Week5 report upload: $WEEK5_RESPONSE"
-
-  # build and push
-  build:
-    # needs: [security_gate]
-    if: true
-    permissions:
-      id-token: write
-    runs-on: ubuntu-latest
-    steps:
-      - name: Set up QEMU
-        uses: docker/setup-qemu-action@v3
-      - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v3
-      - name: Login to Docker Hub
-        uses: docker/login-action@v3
-        with:
-          username: ${{ secrets.DOCKERHUB_USERNAME }}
-          password: ${{ secrets.DOCKERHUB_TOKEN }}
-      - name: Build and push
-        uses: docker/build-push-action@v5
-        with:
-          push: true
-          sbom: true
-          provenance: true
-          tags: ${{ secrets.DOCKERHUB_USERNAME }}/devops-labs:latest
-
-      - name: Install Cosign
-        uses: sigstore/cosign-installer@v3.4.0
-
-      - name: Sign the images with GitHub OIDC Token
-        env:
-          IMAGE: ${{ secrets.DOCKERHUB_USERNAME }}/devops-labs:latest
-        run: |
-          cosign sign --yes ${IMAGE}
