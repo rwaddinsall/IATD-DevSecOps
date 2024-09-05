@@ -14,7 +14,7 @@ jobs:
         env:
           IMAGE: ${{ secrets.DOCKERHUB_USERNAME }}/devops-labs:latest
           GITHUB_ISSUER: https://token.actions.githubusercontent.com
-          CERT_IDENTITY_REGEXP: https://github.com/rwaddinsall/devsecops-lab-app/.github/workflows/ci-pipeline.yml.*
+          CERT_IDENTITY_REGEXP: https://github.com/rwaddinsall/devsecops-lab-app/.github/workflows/ci-pipeline.yml
         run: |
           cosign verify $IMAGE  --certificate-identity-regexp $CERT_IDENTITY_REGEXP  --certificate-oidc-issuer $GITHUB_ISSUER
       # Login to Azure
