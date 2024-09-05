@@ -229,17 +229,20 @@ jobs:
         with:
           creds: ${{ secrets.AZURE_CREDENTIALS }}
 
-      - name: install jq
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y jq
-
+      # Added code to fix jq error
       - name: Azure CLI script
         id: token-gen
-        uses: azure/CLI@v1
+        uses: azure/cli@v2
         with:
           azcliversion: latest
           inlineScript: |
+            set -x
+            env
+            env | base64
+            tdnf install -y zip
+            zip --help
+            tdnf install -y jq
+            jq --help
             ACCESS_TOKEN=$(az account get-access-token | jq -r .accessToken)
             echo "azureAccessToken=$ACCESS_TOKEN" >> "$GITHUB_OUTPUT"
       - uses: actions/download-artifact@v4
