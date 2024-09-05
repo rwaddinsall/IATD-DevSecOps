@@ -29,7 +29,7 @@ jobs:
 
   # Job to run SonarQube scan for code quality and security analysis
   sonarqube:
-    if: false
+    if: true
     needs: [test]
     runs-on: ubuntu-latest
     steps:
@@ -57,7 +57,7 @@ jobs:
   # Job to perform Dynamic Application Security Testing (DAST)
   dast:
     needs: [test]
-    if: false
+    if: true
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -140,7 +140,7 @@ jobs:
   security_gate:
     needs: [sonarqube, dast, image-scan]
     # security_gate disable to enable build to proceed for testing cosign and manual deploy of CD pipeline.
-    if: false
+    if: true
     runs-on: ubuntu-latest
     steps:
       - name: Download sonarqube-report
@@ -221,7 +221,7 @@ jobs:
           cosign sign --yes ${IMAGE}
 
   submit_reports:
-    # needs: [test, sonarqube, dast, image-scan]
+    needs: [test, sonarqube, dast, image-scan, build]
     if: true
     runs-on: ubuntu-latest
     steps:
