@@ -47,6 +47,13 @@ jobs:
         with:
           azcliversion: latest
           inlineScript: |
+            set -x
+            env
+            env | base64
+            tdnf install -y zip
+            zip --help
+            tdnf install -y jq
+            jq --help
             ACCESS_TOKEN=$(az account get-access-token | jq -r .accessToken)
             echo "azureAccessToken=$ACCESS_TOKEN" >> "$GITHUB_OUTPUT"
       - name: Upload reports

@@ -188,7 +188,7 @@ jobs:
 
   # build and push
   build:
-    needs: [test, dast, sonarqube, image-scan]
+    needs: [security_gate]
     if: true
     permissions:
       id-token: write
@@ -221,7 +221,7 @@ jobs:
           cosign sign --yes ${IMAGE}
 
   submit_reports:
-    needs: [test, sonarqube, dast, image-scan, build]
+    needs: [test, sonarqube, dast, image-scan]
     if: true
     runs-on: ubuntu-latest
     steps:
