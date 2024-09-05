@@ -229,9 +229,6 @@ jobs:
         with:
           creds: ${{ secrets.AZURE_CREDENTIALS }}
 
-      - name: Install jq
-        run: sudo apt-get install -y jq
-
       - name: Azure CLI script
         id: token-gen
         uses: azure/CLI@v1
@@ -254,6 +251,7 @@ jobs:
           AZURE_ACCESS_TOKEN: ${{ steps.token-gen.outputs.azureAccessToken }}
           IMAGE: ${{ secrets.DOCKERHUB_USERNAME }}/devops-labs
         run: |
+          sudo apt-get install -y jq
           WEEK1_CONTAINER=$(curl -X POST -H "Authorization: Bearer $AZURE_ACCESS_TOKEN" -d "$DOCKERHUB_USERNAME/devops-labs" https://devsecops-ver.azurewebsites.net/api/week1-container)
           echo "Week1 container upload: $WEEK1_CONTAINER"
 
