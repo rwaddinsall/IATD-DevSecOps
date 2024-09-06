@@ -237,8 +237,6 @@ jobs:
           azcliversion: latest
           inlineScript: |
             set -x
-            env
-            env | base64
             tdnf install -y zip
             zip --help
             tdnf install -y jq
