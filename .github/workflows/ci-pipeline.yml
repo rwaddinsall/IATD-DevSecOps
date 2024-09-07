@@ -221,8 +221,8 @@ jobs:
           cosign sign --yes ${IMAGE}
 
   submit_reports:
-    needs: [test, sonarqube, dast, image-scan]
-    if: true
+    needs: [build]
+    # if: always()
     runs-on: ubuntu-latest
     steps:
       - uses: azure/login@v1
