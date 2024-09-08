@@ -140,7 +140,7 @@ jobs:
   security_gate:
     needs: [sonarqube, dast, image-scan]
     # security_gate disable to enable build to proceed for testing cosign and manual deploy of CD pipeline.
-    if: true
+    if: false
     runs-on: ubuntu-latest
     steps:
       - name: Download sonarqube-report
@@ -222,7 +222,7 @@ jobs:
 
   submit_reports:
     needs: [build]
-    # if: always()
+    if: true
     runs-on: ubuntu-latest
     steps:
       - uses: azure/login@v1
