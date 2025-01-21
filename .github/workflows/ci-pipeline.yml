@@ -1,3 +1,34 @@
+# This workflow is named "Python test and build" and triggers on every push.
+# It orchestrates multiple jobs to automate testing, code quality checks, security scanning, and deployment steps:
+#
+# 1. test:
+#    - Sets up Python, installs dependencies, and runs tests with coverage reports.
+#    - Uploads test result artifacts.
+#
+# 2. sonarqube:
+#    - Performs a SonarQube analysis to assess code quality and security.
+#    - Downloads and uploads the SonarQube report artifact.
+#
+# 3. dast:
+#    - Builds and deploys a Docker image, then runs ZAP scans against the deployed application.
+#    - Uploads ZAP scan results as an artifact.
+#
+# 4. image-scan:
+#    - Uses a security scanning action to detect vulnerabilities in the Docker image.
+#    - Uploads the resulting scan report.
+#
+# 5. security_gate:
+#    - Downloads SonarQube, ZAP, and image scan reports and evaluates them for high severity issues.
+#    - Fails the pipeline if any critical vulnerabilities or issues are detected.
+#    - Currently disabled in this configuration.
+#
+# 6. build:
+#    - Builds and pushes a Docker image with an SBOM and provenance.
+#    - Uses Cosign to sign the image with GitHub OIDC.
+#
+# 7. submit_reports:
+#    - Logs in to Azure, retrieves an access token, and uploads reports (container, SonarQube, ZAP, and image scan).
+#    - Submits a threat model JSON file to an external verification API.
 name: Python test and build
 
 on: [push]
