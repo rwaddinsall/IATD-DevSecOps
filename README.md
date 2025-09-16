@@ -1,8 +1,5 @@
 # IATD-DevSecOps
 
-![CI Status](https://github.com/rwaddinsall/IATD-DevSecOps/actions/workflows/ci-pipeline.yml/badge.svg)
-![Security Gate](https://img.shields.io/badge/security--gate-passing-green)
-![License](https://img.shields.io/github/license/rwaddinsall/IATD-DevSecOps)
 
 ## Overview
 
